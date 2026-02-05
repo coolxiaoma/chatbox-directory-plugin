@@ -214,6 +214,21 @@ function makeDraggable(element: HTMLElement, handle: HTMLElement) {
     // 获取鼠标点击位置
     pos3 = e.clientX
     pos4 = e.clientY
+
+    // 第一次拖拽时，确保元素使用left和top定位
+    if (
+      (element.style.right || element.style.transform) &&
+      !element.style.left
+    ) {
+      const rect = element.getBoundingClientRect()
+      // 转换为left和top定位
+      element.style.left = rect.left - window.pageXOffset + "px"
+      element.style.top = rect.top - window.pageYOffset + "px"
+      // 清除right和transform
+      element.style.right = ""
+      element.style.transform = "none"
+    }
+
     document.onmouseup = closeDragElement
     // 移动鼠标时触发
     document.onmousemove = elementDrag
@@ -227,10 +242,14 @@ function makeDraggable(element: HTMLElement, handle: HTMLElement) {
     pos2 = pos4 - e.clientY
     pos3 = e.clientX
     pos4 = e.clientY
+
     // 设置新位置
-    element.style.top = element.offsetTop - pos2 + "px"
-    element.style.left = element.offsetLeft - pos1 + "px"
-    // 清除transform，使用top和left定位
+    const currentTop = parseInt(element.style.top) || 0
+    const currentLeft = parseInt(element.style.left) || 0
+    element.style.top = currentTop - pos2 + "px"
+    element.style.left = currentLeft - pos1 + "px"
+    // 确保使用left和top定位
+    element.style.right = ""
     element.style.transform = "none"
   }
 
